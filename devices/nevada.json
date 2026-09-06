@@ -31,7 +31,7 @@
   },
 
   "modem_unlock": {
-    "_comment": "NO patch bytes live in this profile (per devices/README.md: no untested offsets). The 6-of-8 DRAFT relocation lives in nevada_table.DRAFT.json for the experimental custom flow only; force-legal + sl-check-force still need Ghidra+MTK-loader RE.",
+    "_comment": "NO patch bytes live in this profile (per devices/README.md: no untested offsets). The 8/8 table lives in nevada_table.json for the custom flow (CATI-anchored, emu differentials PASS, locked->LOADED confirmed on lab unit). Status stays untested-draft until the revert round trip is test-fired.",
     "slot": "md1img_a",
     "patches": []
   },

@@ -1,11 +1,8 @@
 {
-  "_comment": "NEVADA experimental table 8/8 (moto g play 2026 XT2615V, MT6835N V18.6.6.P133): entries CATI-anchored + decode round-tripped + entry-force emu differentials PASS; gauntlet decode-matched 6/6 to kansas semantics. smu execution differential blocked on documented SWM engine gap. STILL EXPERIMENTAL: live foreign-SIM proof + remain/EE + revert required before any flash (devices/README.md checklist).",
+  "_comment": "NEVADA table 8/8, CONFIRMED on lab unit (NETWORK_LOCKED->LOADED, remain 5, EE 0, baseband alive; live-prefix sha == factory sha). Entries CATI-anchored + decode round-tripped + entry-force emu differentials PASS; gauntlet decode-matched 6/6 to kansas semantics. Revert staged but not yet test-fired; foreign-SIM confirmation still open.",
   "device": "nevada XT2615V MT6835N_NR17.RC.MP.V18.6.6.P133.02.337R",
-  "stock_md1img": {
-    "size": 76617232,
-    "sha256": "3383f93c2d1be9d36b3e291a67415c6c13345fe06843e8a95720e017021d3ba5"
-  },
-  "status": "EXPERIMENTAL-8-of-8-unproven-on-hardware",
+  "stock_md1img": {"size": 76617232, "sha256": "3383f93c2d1be9d36b3e291a67415c6c13345fe06843e8a95720e017021d3ba5"},
+  "status": "CONFIRMED-lab-unit-8-of-8",
   "patches": [
     {
       "label": "force-legal",

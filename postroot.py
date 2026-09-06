@@ -18,9 +18,9 @@ Interaction contract (there is exactly one place a human may be needed):
 Usage:
   python postroot.py [--config mylab-nevada.json] [--work work-nevada]
   python postroot.py --config mylab-nevada.json --experimental \\
-      --patches nevada_table.DRAFT.json
+      --patches nevada_table.json
   python postroot.py --config mylab-nevada.json --experimental \\
-      --patches nevada_table.DRAFT.json --flash   # the one destructive step
+      --patches nevada_table.json --flash   # the one destructive step
 
 Exit codes: 0 ok, 2 refused/blocked (nothing destructive touched), 1 error.
 """

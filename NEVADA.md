@@ -1,9 +1,10 @@
-# Nevada port (experimental) — Moto G Play 2026 XT2615V
+# Nevada port (confirmed on lab unit) — Moto G Play 2026 XT2615V
 
-Experimental port of the modem-unlock flow to a second device. Status:
-**boots, flashes, locked→LOADED once on the lab unit — NOT proven.**
-Foreign-SIM confirmation and revert test are still open. Everything below
-is the full method so anyone can reproduce or refute it.
+Second-device port of the modem-unlock flow. Status: **CONFIRMED on the
+lab unit** (NETWORK_LOCKED → LOADED, remain counter 5→5, zero modem
+exceptions, baseband alive, live backup hashes to factory). Revert is
+staged but not yet test-fired; foreign-SIM confirmation is still open.
+Everything below is the full method so anyone can reproduce or refute it.
 
 ## Device + firmware
 
@@ -43,7 +44,7 @@ is the full method so anyone can reproduce or refute it.
 cp mylab-nevada.json mylab.json   # or pass --config mylab-nevada.json
 # point mylab firmware_files.md1img_stock at YOUR factory md1img first
 python postroot.py --config mylab-nevada.json --work work-nevada \
-  --experimental --patches nevada_table.DRAFT.json
+  --experimental --patches nevada_table.json
 ```
 
 That does fingerprint, full-parse audit, old-byte gates, byte-exact build,
@@ -53,7 +54,7 @@ on your explicit risk), backup present, unlocked bootloader:
 
 ```bash
 python postroot.py --config mylab-nevada.json --work work-nevada \
-  --experimental --patches nevada_table.DRAFT.json --flash
+  --experimental --patches nevada_table.json --flash
 python unlock.py verify            # LOADED, remain [5], EE 0
 python unlock.py revert --backup work-nevada/backups   # way back
 ```
@@ -69,17 +70,17 @@ happens on the phone, then everything runs (bounded waits, fail-fast).
 - Live backup prefix hashes exactly to the factory sha above.
 - Receipt: `work-nevada/FLASH_RECEIPT.txt` (git-ignored, stays on your disk).
 
-## Open items (do these before calling it proven)
+## Open items (remaining proof, not blockers)
 
 1. Foreign-SIM test (non-Verizon-family): stock `NETWORK_LOCKED` →
    patched `LOADED`, remain 5, EE 0.
-2. Revert round trip back to stock behavior.
+2. Revert round trip back to stock behavior (staged, one command).
 3. OTA relock watch: any modem update restores stock lock silently.
 4. Keep charge 30%+ for any flash; never flash what you cannot revert.
 
 ## Files
 
-- `nevada_table.DRAFT.json` — the 8/8 table (offsets are file offsets).
+- `nevada_table.json` — the 8/8 table (offsets are file offsets).
 - `devices/nevada.json` — fingerprint + policy, no patch bytes.
 - `postroot.py`, `mylab-nevada.json` — runner + lab config.
 - `cati_parse.py`, `nevada_diff.py` — symbol extraction + emu differential.
