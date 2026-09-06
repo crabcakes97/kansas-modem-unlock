@@ -4,7 +4,8 @@ Plug-in device framework (flash → root → carrier unlock) with interactive
 guidance. Ships with **one verified device** (below); other devices plug in
 as data files only after hardware-proven verification (see
 `devices/README.md`). Nothing here works on a device it wasn't proven on —
-refusal is a feature.
+refusal is a feature. An experimental second-device port (nevada, Moto G
+Play 2026) lives in `NEVADA.md` — same machinery and gates, not yet proven.
 
 ## The 5-minute path
 
@@ -13,6 +14,8 @@ cp config.json mylab.json   # point firmware_files at YOUR images
 python wizard.py --dry-run --work work-wizard     # walk everything, touch nothing
 python wizard.py --work work-wizard               # detect -> flash -> root -> unlock
 python wizard.py --work work-wizard --phases verify  # health re-check anytime
+# nevada, hands-free past rooting (experimental, see NEVADA.md):
+python postroot.py --config mylab-nevada.json --work work-nevada --experimental --patches nevada_table.DRAFT.json
 ```
 
 State resumes from `work-wizard/state.json`; `--phases unlock` (or any
@@ -134,6 +137,7 @@ tool verifies what you point it at and refuses the rest.
 | Profile | Status | Notes |
 |---|---|---|
 | `kansas` — Moto G 5G (2025) XT2513V, MT6835 P247.01.339R | verified-live | SIM NETWORK_LOCKED→LOADED proven, remain 5, EE 0, revert tested |
+| `nevada` — Moto G Play (2026) XT2615V, MT6835N W1WNS36.18-114-1 | experimental | 8/8 table ported (CATI + decode + emu), one locked→LOADED boot, foreign-SIM + revert still open (see `NEVADA.md`) |
 
 Adding one: `devices/README.md` (schema + 6-item hardware-proof checklist).
 Untested drafts run audit/status only — flashing refuses.
@@ -141,6 +145,10 @@ Untested drafts run audit/status only — flashing refuses.
 ---
 
 ## Standalone modem tool (same guarantees, no wizard)
+
+Second device? The nevada experimental port (Moto G Play 2026) runs the
+same pipeline through `unlock.py --experimental custom` — full story in
+`NEVADA.md`.
 
 SIM-lock evaluation patch tool for **one exact device + modem build**:
 
