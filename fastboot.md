@@ -83,8 +83,17 @@ hold Power 12s; black screen → Vol-Down+Power 12s → `fb_mode_clear`.
   SLA/DAA cannot be turned off from here (BROM+preloader enforced, fused);
   unlocked fastboot already covers our flash needs — SLA only gates
   BROM-download tools we don't use.
-- Returned to slot A: normal boot, SIM LOADED, all intact.
-- Still open: dump *trigger + retrieval* (where it lands: expdb vs USB).
+- UTAG `console` reads cleanly on slot B (protected=false, empty value):
+  set forms per its description: `enable|true`, `disable|false`, or custom
+  `"ttyS0,921600n1"`. Enables kernel serial console (needs UART pads to see;
+  pstore console-ramoops already works without it). `tool_by_pass_pwk` and
+  `bptools` are NOT utags (code/menu identifiers, not settable values).
+- Tools Mode = bootloader MENU item (`Switch_tools_mode` in menu list next
+  to `restartbootloader`): Vol keys to highlight, Power to select. No command
+  enters it; `reboot bptools` is ignored (normal reboot). Needs fingers.
+- GZ-canary test signal: slot-B **fastboot presence** (fastboot needs
+  GZ→LK, so USB fastboot = hypervisor accepted+ran). Android on B is NOT
+  required and never will be (no system_b).
 
 ## Safety rules
 
