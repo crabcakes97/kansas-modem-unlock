@@ -108,6 +108,50 @@ def load_table(path):
     return out
 
 
+def resolve_auto_table(stock):
+    """Auto-detect which modem patch table fits this stock md1img.
+
+    Fingerprints (size + sha256) against bundled device tables and returns
+    (device_id, table). Refuses on anything unknown — never guesses.
+    """
+    import hashlib as _hl
+    import json as _json
+    data = Path(stock).read_bytes()
+    size, sha = len(data), _hl.sha256(data).hexdigest()
+    here = Path(__file__).resolve().parent
+    candidates = []
+    candidates.append({
+        "id": "kansas XT2513V P247.01.339R (verified-live)",
+        "size": EXPECT_STOCK_SIZE,
+        "sha256": EXPECT_STOCK_SHA256,
+        "table": [(n, o, bytes.fromhex(ol), bytes.fromhex(nw), w)
+                  for n, o, ol, nw, w in PATCHES],
+    })
+    nev_path = here / "nevada_table.json"
+    if nev_path.is_file():
+        try:
+            meta = _json.loads(nev_path.read_text()).get("stock_md1img", {})
+            if meta.get("size") and meta.get("sha256"):
+                candidates.append({
+                    "id": "nevada XT2615V (confirmed-lab-unit)",
+                    "size": int(meta["size"]),
+                    "sha256": str(meta["sha256"]),
+                    "table": None,
+                    "path": str(nev_path),
+                })
+        except (ValueError, AttributeError):
+            pass
+    for cand in candidates:
+        if cand["size"] == size and cand["sha256"] == sha:
+            if cand["table"] is None:
+                return cand["id"], load_table(cand["path"])
+            return cand["id"], cand["table"]
+    raise Refuse(
+        f"auto-detect: stock md1img (size={size} sha256={sha[:16]}…) "
+        f"matches no bundled table ({', '.join(c['id'] for c in candidates)}); "
+        "refusing — port it as data first (see devices/README.md)")
+
+
 def audit_or_refuse(path, what):
     ok, rep = imageaudit.audit_image(path)
     print(imageaudit.render(rep))
@@ -392,7 +436,11 @@ def cmd_custom(args):
         raise Refuse(f"stock file not found: {sp}")
     audit_or_refuse(sp, "stock image (intact-factory proof lives here: "
                     "stored-vs-recomputed digests must match pre-patch)")
-    table = load_table(args.patches)
+    if args.patches == "auto":
+        device_id, table = resolve_auto_table(sp)
+        print(f"auto-detect: {device_id}")
+    else:
+        table = load_table(args.patches)
     data = bytearray(sp.read_bytes())
     for label, off, old, new, _why in table:
         if off < 0 or off + len(old) > len(data) or len(old) != len(new):
@@ -500,7 +548,9 @@ def main():
     p = sub.add_parser("custom")
     p.add_argument("--stock", required=True)
     p.add_argument("--patches", required=True,
-                   help="your patch table JSON [{label,offset,old,new,why}]")
+                    help="your patch table JSON [{label,offset,old,new,why}] "
+                         "or 'auto' to fingerprint stock and pick the bundled "
+                         "table (kansas/nevada), refusing anything unknown")
     p.add_argument("--out", required=True)
     sub.add_parser("bootloader")
     p = sub.add_parser("full")
