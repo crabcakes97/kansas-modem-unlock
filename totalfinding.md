@@ -91,3 +91,15 @@ it, so LK-only remaps evaporate.
 2. UTAG full dump → exact knob names; remaining `tbnz` gates only if needed.
 3. Next modem patch = defined target + nearby dead-code survey.
 4. scp.img (CM4 bridge core, AP↔MD shared mem) as alternate cross-domain path.
+
+## GZ canary: ACCEPTED (2026-09-07, live slot-B test)
+
+- 1 behavior-neutral log byte (`Hello from`→`Hello fron` @ gz `0x5902D`)
+  + CERT2 re-sign, trimmed to exact 32MB partition size.
+- Flashed `gz_b`, booted slot B: **fastboot USB alive, factory-allow LK
+  running, ramdump ungated** — chain holds through the forged hypervisor
+  (preloader→bl2_ext→TEE→GZ→LK all pass).
+- Consequence: hypervisor preset class is OPEN (SMMU/stage-2 lives here).
+  `gz_b` keeps the canary (exact-size, safer than short RETUS file);
+  restore path: reflash any exact-size signed gz.
+- Returned to slot A: normal boot, LOADED, intact.
