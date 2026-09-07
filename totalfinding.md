@@ -93,7 +93,6 @@ it, so LK-only remaps evaporate.
 4. scp.img (CM4 bridge core, AP↔MD shared mem) as alternate cross-domain path.
 
 ## GZ canary: ACCEPTED (2026-09-07, live slot-B test)
-
 - 1 behavior-neutral log byte (`Hello from`→`Hello fron` @ gz `0x5902D`)
   + CERT2 re-sign, trimmed to exact 32MB partition size.
 - Flashed `gz_b`, booted slot B: **fastboot USB alive, factory-allow LK
@@ -103,3 +102,19 @@ it, so LK-only remaps evaporate.
   `gz_b` keeps the canary (exact-size, safer than short RETUS file);
   restore path: reflash any exact-size signed gz.
 - Returned to slot A: normal boot, LOADED, intact.
+
+## Hypervisor live map (`pulled rom/gz_log_live.txt`, 62KB, read-only pull)
+
+- RKP `unmap2` (t≈4.6–4.9s): 33 regions stripped from kr/lk/gz stage-2
+  (PERM:0), incl. `0x70000000`+64MB, `0xd0000000`+44MB, `0xd3000000`+,
+  `0xd4000000`+54MB, `0x9fe70000`+, `0x7ec00000`+18MB. Carved from
+  normal-world visibility at every boot.
+- Trusty share windows registered: iova `0xfc000000`+64MB,
+  `0x1a0000000`+512MB, `0x1c0000000`+512MB, `0x1e0000000`+256MB,
+  `0x1f0000000`+256MB.
+- `TZCMD_MEM_SHAREDMEM_REG` succeeding live (86KB/1.2MB/512KB MTEE
+  buffers) — the runtime share API is callable; KTA_Mem
+  Alloc/Reference/Unreference handles exist; `/dev/gz_kree` + full gz_*
+  module stack loaded.
+- No md1/modem/smem strings in the hypervisor log at all — modem memory
+  policy is enforced silently (or below this log's level).
