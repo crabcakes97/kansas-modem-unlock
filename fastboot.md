@@ -72,6 +72,17 @@ hold Power 12s; black screen → Vol-Down+Power 12s → `fb_mode_clear`.
   <bad-name>` now reaches the handler (`no such utag`) instead of
   `Not allowed command`. Real knob found: **`enable_fulldump=true`,
   already unprotected** — no unprotect needed.
+- `oem usb2jtag/p2u/dump_pllk_log/printk-ratelimit`: not supported commands
+  (internal strings only, no handlers — cannot be ungated, nothing to point at).
+- `getvar cid` → `0x33` = **51 = RetailLocked** (per RETUS signing-info).
+  `oem cid_prov_req` returns a device-specific provisioning blob (keep local):
+  CID change needs Motorola-signed response — no local flip exists. SIM-lock
+  freedom already comes from the modem patches (LOADED), not CID.
+- SLA verdict (from boot logs in expdb): `sbc_en=1`,
+  `img_auth_required=1` on every image incl. `bl2_ext cert vfy → ok`.
+  SLA/DAA cannot be turned off from here (BROM+preloader enforced, fused);
+  unlocked fastboot already covers our flash needs — SLA only gates
+  BROM-download tools we don't use.
 - Returned to slot A: normal boot, SIM LOADED, all intact.
 - Still open: dump *trigger + retrieval* (where it lands: expdb vs USB).
 

@@ -65,18 +65,24 @@ memdumps (`bl33_memdump` strings). Full-DRAM destination is unresolved:
 strings imply a USB write path (`Failed to write to USB`) but no fetch
 command was found — a host-side receiver protocol is the missing piece.
 
-## 5. Trigger (NEXT, not yet executed)
+## 5. Trigger (VALIDATED 2026-09-07, logs-only result)
 
-Options, cheapest first:
+SysRq crash from rooted system (needs `echo 1 > /proc/sys/kernel/sysrq`
+first; stock has it `0`):
 
-1. `fastboot reboot` on slot B (no `system_b`) — observe: fastboot error
-   return (safe, likely) vs WDT loop (fallback covers).
-2. SysRq crash from slot-A system (root):
-   `su -c "echo c > /proc/sysrq-trigger"` — expect minutes of black
-   screen if a dump writes; compare `expdb` sha after; check for USB
-   bulk traffic during the window (`lsusb -v` / wireshark-usb).
-3. Only then: hunt the output-device selector (DT `mrdump_output`?
-   bootarg? `ramdump` post-crash fastboot verb?).
+```bash
+su -c "echo c > /proc/sysrq-trigger"   # Kernel panic - not syncing
+```
+
+Observed: panic at `sysrq triggered crash` → ramoops capture
+(`console-ramoops-0` 262KB + `dmesg-ramoops-0` 9KB, pstore was empty
+before) → clean reboot in ~90s. expdb grew +239,602 B (log rotation).
+**No DRAM contents anywhere** — kernel crashes yield the 896KB ramoops
+window (`ramoops.mem_address=0x48090000 mem_size=0xe0000` on cmdline),
+never full memory. `mrdump.ko` is loaded live (159744 B, 18 holders incl.
+`ccci_dpmaif`, `ccci_md_all`) — the modem-wired capture path exists in
+kernel, but its full-memory output still needs the unresolved
+output-device selector (§4). Trigger works; retrieval is the gap.
 
 ## 6. Recovery (every step reversible)
 
