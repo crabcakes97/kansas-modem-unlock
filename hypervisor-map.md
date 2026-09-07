@@ -66,7 +66,10 @@ from `pulled rom/gz_log_live.txt` (62KB ring, read-only).
 
 1. Static region lists (`all_mem_region`/`oem_all_mem_region`) — parse
    addresses/sizes/perms from image data.
-2. Gatekeeper callers (`is_addr_in_*`) — branch sites for future NOP
-   presets (same Val pattern as LK gates).
+2. ~~Gatekeeper callers~~ Range hook VALIDATED live (2026-09-07):
+   `0x200E4 B.HI` + `0x200EC B.LO` → deny(log)+`-8`; NOPs fall to map call.
+   `--preset gz-range` (8 bytes, VALID) flashed to `gz_b`, slot B booted to
+   fastboot with ramdump ungated — no regression. Effect (forced pass on
+   arbitrary requests) still needs a caller path (hypercall/KREE).
 3. SiP `0x8200FF03` callee semantics + `gz_dump_vm_tbl` trigger.
 4. KREE ioctl ABI (`/dev/gz_kree`) for no-flash share requests.
