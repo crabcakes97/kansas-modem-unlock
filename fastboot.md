@@ -65,7 +65,6 @@ hold Power 12s; black screen → Vol-Down+Power 12s → `fb_mode_clear`.
    before cutting anything).
 
 ## Results (live slot-B tests)
-
 - `factory-allow` v1 (dispatcher tbz `0xF3F4`→NOP): `oem ramdump` went from
   `command restricted` to usage text; `ramdump enable` → OKAY.
 - `factory-allow` v2 (+config tbz `0xAD88`→NOP): `config unprotect
@@ -94,6 +93,18 @@ hold Power 12s; black screen → Vol-Down+Power 12s → `fb_mode_clear`.
 - GZ-canary test signal: slot-B **fastboot presence** (fastboot needs
   GZ→LK, so USB fastboot = hypervisor accepted+ran). Android on B is NOT
   required and never will be (no system_b).
+
+## Max-access notes (retail build realities)
+
+- No EngineerMode/CQATest/factory apps installed — nothing to launch.
+- `adb root`: refused (production build). No adbd root, ever here.
+- vbmeta: `fastboot --disable-verity --disable-verification flash
+  vbmeta_a/vbmeta_system_a` (RETUS files) boots fine, orange. Direct
+  `/system` RW still impossible — system is **erofs** (read-only by design,
+  not policy). Magisk systemless overlays remain the way.
+- Meta/factory/bptools reboot reasons all ignored (normal reboot).
+  Dialer codes need fingers: `*#*#3646633#*#*` (MTK),
+  `*#*#2486#*#*` (Moto CQATest, likely absent).
 
 ## Safety rules
 
