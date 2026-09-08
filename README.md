@@ -6,6 +6,7 @@ as data files only after hardware-proven verification (see
 `devices/README.md`). Nothing here works on a device it wasn't proven on —
 refusal is a feature. A confirmed second-device port (nevada, Moto G
 Play 2026, locked→LOADED on the lab unit) lives in `NEVADA.md`.
+run wizard.py --experimental thats the auto installer
 
 ## The 5-minute path
 
